@@ -9,297 +9,161 @@
 <style>
   :root { --bg: #0d0d0d; --card: #1a1a1a; --accent: #00aaff; --text: #f0f0f0; --muted: #aaa; }
   * { box-sizing: border-box; }
-  body { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; line-height: 1.4; max-width: 480px; margin: 0 auto; }
+  body { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; line-height: 1.45; max-width: 480px; margin: 0 auto; }
   h1 { font-size: 1.4rem; color: var(--accent); margin: 8px 0; }
-  h2 { font-size: 1.1rem; color: var(--accent); margin: 12px 0 6px; }
+  h2 { font-size: 1.15rem; color: var(--accent); margin: 14px 0 8px; }
   .card { background: var(--card); border-radius: 12px; padding: 14px; margin: 10px 0; }
-  button { background: var(--accent); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; margin: 6px 0; font-size: 1rem; }
-  button.secondary { background: #333; color: var(--text); }
-  input, select { width: 100%; padding: 10px; margin: 4px 0; background: #222; color: var(--text); border: 1px solid #444; border-radius: 6px; }
-  .timer { font-size: 2.4rem; font-weight: bold; text-align: center; color: #0f0; margin: 8px 0; }
-  .ex { margin: 10px 0; }
-  .ex img { width: 100%; border-radius: 8px; margin: 6px 0; max-height: 220px; object-fit: cover; }
-  .cue { font-size: 0.9rem; color: var(--muted); }
+  button { background: var(--accent); color: #000; border: none; padding: 12px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; margin: 6px 0; font-size: 1rem; }
+  .timer { font-size: 2.6rem; font-weight: bold; text-align: center; color: #0f0; margin: 10px 0; }
+  .ex { margin: 12px 0; padding-bottom: 8px; border-bottom: 1px solid #333; }
+  .ex img { width: 100%; border-radius: 8px; margin: 6px 0; max-height: 200px; object-fit: cover; }
+  .steps { font-size: 0.9rem; margin: 6px 0; }
+  .steps li { margin: 4px 0; }
   .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
   .tabs button { flex: 1; }
   .hidden { display: none; }
-  .log-entry { font-size: 0.85rem; padding: 6px 0; border-bottom: 1px solid #333; }
-  .progress { color: #4caf50; }
-  .small { font-size: 0.8rem; color: var(--muted); }
+  .current { background: #1e3a5f; border-left: 4px solid #00aaff; padding: 8px; border-radius: 6px; margin: 8px 0; }
 </style>
 </head>
 <body>
 <h1>Military Calisthenics Daily</h1>
-<p class="small">52 · 5'5.5" · 149 → <145 lbs · Muscle retention + fitness</p>
-
+<p class="small">52 · 5'5.5" · 149 → <145 lbs</p>
 <div class="tabs">
   <button onclick="showTab('plan')">Plan</button>
   <button onclick="showTab('workout')">Workout</button>
   <button onclick="showTab('tracker')">Tracker</button>
 </div>
-
-<!-- PLAN -->
 <div id="plan" class="tab">
   <div class="card">
     <h2>Daily Structure (30 min)</h2>
-    <p><strong>5–7 min</strong> Warm-up / mobility<br>
-    <strong>15 min</strong> Calisthenics circuit (2 rounds)<br>
-    <strong>8–10 min</strong> Yoga / cool-down</p>
-    <p class="small">6 days/week. One lighter day if needed. Progress by adding time, reps, or harder variations.</p>
-  </div>
-  <div class="card">
-    <h2>Nutrition note</h2>
-    <p>Training supports muscle. Weight drop to <145 needs a mild calorie deficit + ~110–120 g protein/day. Track weight consistently.</p>
+    <p><strong>6 min</strong> Guided warm-up<br><strong>15 min</strong> Circuit (2 rounds · 40s / 20s)<br><strong>9 min</strong> Yoga / cool-down</p>
   </div>
 </div>
-
-<!-- WORKOUT -->
 <div id="workout" class="tab hidden">
   <div class="card">
-    <h2>1. Warm-up (5–7 min)</h2>
-    <div class="ex">
-      <strong>Cat-Cow</strong>
-      <img src="3MEQP.jpg" alt="Cat Cow">
-      <p class="cue">On hands and knees. Arch back and lift head, then round spine and tuck chin. Slow.</p>
-    </div>
-    <p>Plus: arm circles, leg swings, 10 easy squats, world's greatest stretch.</p>
-    <button onclick="startTimer(360, 'Warm-up')">Start 6-min Warm-up</button>
+    <h2>1. Warm-up (6 min guided)</h2>
+    <div id="warmupList"></div>
+    <button onclick="startWarmup()">Start Guided Warm-up</button>
+    <div class="timer" id="warmupTimer">Ready</div>
+    <div id="warmupCurrent" class="current"></div>
   </div>
-
   <div class="card">
-    <h2>2. Circuit (15 min · 2 rounds · 40s work / 20s rest)</h2>
+    <h2>2. Circuit (15 min)</h2>
     <div id="exercises"></div>
     <button onclick="startCircuit()">Start Guided Circuit</button>
     <div class="timer" id="timerDisplay">Ready</div>
-    <div id="currentExercise" style="text-align:center; font-weight:bold; min-height:40px;"></div>
+    <div id="currentExercise" class="current"></div>
   </div>
-
   <div class="card">
-    <h2>3. Yoga / Mobility (8–10 min)</h2>
-    <div class="ex">
-      <strong>Downward Dog</strong>
-      <img src="8gOYg.jpg" alt="Downward Dog">
-      <p class="cue">Hips high, inverted V. Press hands, soft knees ok.</p>
-    </div>
-    <div class="ex">
-      <strong>Warrior II</strong>
-      <img src="jJu6M.jpg" alt="Warrior II">
-      <p class="cue">Wide stance, front knee bent, arms out, gaze over front hand.</p>
-    </div>
-    <p>Also: pigeon or figure-4 hip opener, child’s pose, breathing.</p>
-    <button onclick="startTimer(540, 'Yoga')">Start 9-min Yoga</button>
+    <h2>3. Yoga (9 min)</h2>
+    <div id="yogaList"></div>
+    <button onclick="startYoga()">Start Guided Yoga</button>
+    <div class="timer" id="yogaTimer">Ready</div>
+    <div id="yogaCurrent" class="current"></div>
   </div>
 </div>
-
-<!-- TRACKER -->
 <div id="tracker" class="tab hidden">
   <div class="card">
     <h2>Weight Log</h2>
-    <input type="number" id="weight" step="0.1" placeholder="Current weight (lbs)" value="149">
+    <input type="number" id="weight" step="0.1" value="149" style="width:100%;padding:10px;background:#222;color:#fff;border:1px solid #444;border-radius:6px;">
     <button onclick="logWeight()">Log Today's Weight</button>
     <div id="weightHistory"></div>
   </div>
-
   <div class="card">
     <h2>Log Session</h2>
-    <label>Push-up variation</label>
-    <select id="pushVar">
-      <option>Knee</option>
-      <option>Incline</option>
-      <option selected>Standard</option>
-      <option>Diamond</option>
-      <option>Decline</option>
-    </select>
-    <label>Push performance (reps or seconds)</label>
-    <input type="number" id="pushPerf" placeholder="e.g. 12">
-    <label>Squat variation</label>
-    <select id="squatVar">
-      <option>Chair</option>
-      <option selected>Bodyweight</option>
-      <option>Jump</option>
-      <option>Bulgarian</option>
-    </select>
-    <label>Squat performance</label>
-    <input type="number" id="squatPerf" placeholder="e.g. 15">
-    <button onclick="logSession()">Save Session + Get Advice</button>
-    <div id="adaptation" class="progress"></div>
+    <select id="pushVar" style="width:100%;padding:10px;background:#222;color:#fff;border:1px solid #444;border-radius:6px;"><option>Knee</option><option selected>Standard</option><option>Diamond</option></select>
+    <input type="number" id="pushPerf" placeholder="Push reps" style="width:100%;padding:10px;background:#222;color:#fff;border:1px solid #444;border-radius:6px;">
+    <select id="squatVar" style="width:100%;padding:10px;background:#222;color:#fff;border:1px solid #444;border-radius:6px;"><option selected>Bodyweight</option><option>Chair</option></select>
+    <input type="number" id="squatPerf" placeholder="Squat reps" style="width:100%;padding:10px;background:#222;color:#fff;border:1px solid #444;border-radius:6px;">
+    <button onclick="logSession()">Save Session</button>
+    <div id="adaptation"></div>
   </div>
-
-  <div class="card">
-    <h2>Recent Sessions</h2>
-    <div id="history"></div>
-  </div>
+  <div class="card"><h2>Recent Sessions</h2><div id="history"></div></div>
 </div>
-
 <script>
-const exercises = [
-  { name: "Push-ups (scaled)", cue: "Body straight. Chest toward floor. Start on knees if needed.", img: "I1iij.jpg" },
-  { name: "Bodyweight Squats", cue: "Hips back and down. Chest up. Knees over toes.", img: "Jdyk5.jpg" },
-  { name: "Reverse Lunges", cue: "Step back. Both knees ~90°. Push through front heel.", img: "UbBBb.jpg" },
-  { name: "Plank", cue: "Straight line head to heels. Squeeze glutes. Don’t sag.", img: "qzAto.jpg" },
-  { name: "Glute Bridges", cue: "Lie back, knees bent. Drive hips up, squeeze glutes.", img: "BLKXT.jpg" },
-  { name: "Mountain Climbers", cue: "Push-up position. Alternate knees to chest. Controlled.", img: "KOEdu.jpg" },
-  { name: "Bird-Dog", cue: "Hands & knees. Opposite arm + leg. Straight line, no twist.", img: "Uv2ol.jpg" }
+const warmup = [
+  { name: "Arm Circles", time: 30, img: "I1iij.jpg", steps: ["Stand tall. Arms out to sides.", "Small circles forward 15s, then reverse 15s.", "Keep shoulders relaxed."] },
+  { name: "Leg Swings", time: 40, img: "Jdyk5.jpg", steps: ["Hold wall for balance.", "Swing one leg forward and back (20s each leg).", "Controlled motion. Don't force range."] },
+  { name: "Cat-Cow", time: 45, img: "3MEQP.jpg", steps: ["Hands and knees.", "Inhale: drop belly, lift chest.", "Exhale: round spine, tuck chin. Slow."] },
+  { name: "World's Greatest Stretch", time: 40, img: "UbBBb.jpg", steps: ["Deep lunge. Hands inside front foot.", "Rotate inside arm up. Hold 5s. Switch sides.", "Front knee over ankle."] },
+  { name: "Easy Squats", time: 45, img: "Jdyk5.jpg", steps: ["Feet shoulder-width. Sit hips back.", "Chest up. Lower as comfortable.", "Stand and repeat at easy pace."] }
 ];
-
+const exercises = [
+  { name: "Push-ups", time: 40, img: "I1iij.jpg", steps: ["Body straight. Hands under shoulders.", "Lower chest toward floor. Push up.", "Knees ok if needed. Controlled."] },
+  { name: "Squats", time: 40, img: "Jdyk5.jpg", steps: ["Feet shoulder-width. Hips back, chest up.", "Lower to comfortable depth.", "Drive through heels to stand."] },
+  { name: "Reverse Lunges", time: 40, img: "UbBBb.jpg", steps: ["Step back. Both knees near 90°.", "Front knee over ankle. Push through front heel.", "Alternate legs."] },
+  { name: "Plank", time: 40, img: "qzAto.jpg", steps: ["Straight line head to heels.", "Squeeze glutes. Don't sag.", "Breathe steadily."] },
+  { name: "Glute Bridges", time: 40, img: "BLKXT.jpg", steps: ["Lie back, knees bent.", "Drive hips up. Squeeze glutes.", "Lower with control."] },
+  { name: "Mountain Climbers", time: 40, img: "KOEdu.jpg", steps: ["Push-up position.", "Alternate knees to chest. Hips low.", "Controlled pace."] },
+  { name: "Bird-Dog", time: 40, img: "Uv2ol.jpg", steps: ["Hands and knees. Opposite arm + leg.", "Keep hips level. No twist.", "Move slowly."] }
+];
+const yoga = [
+  { name: "Downward Dog", time: 60, img: "8gOYg.jpg", steps: ["Hips high, inverted V.", "Press hands. Soft knees ok.", "Breathe and hold."] },
+  { name: "Warrior II", time: 50, img: "jJu6M.jpg", steps: ["Wide stance. Front knee bent.", "Arms out. Gaze over front hand.", "Hold each side ~25s."] },
+  { name: "Child's Pose", time: 60, img: "3MEQP.jpg", steps: ["Sit hips back to heels.", "Arms forward. Forehead down.", "Breathe slowly."] },
+  { name: "Figure-4 Stretch", time: 50, img: "BLKXT.jpg", steps: ["Ankle over opposite knee.", "Gently pull supporting leg in.", "Hold each side. Back relaxed."] }
+];
 function showTab(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.add('hidden'));
   document.getElementById(name).classList.remove('hidden');
-  document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('secondary'));
-  event.target.classList.add('secondary');
 }
-
-function renderExercises() {
-  const div = document.getElementById('exercises');
-  div.innerHTML = exercises.map(e => `
-    <div class="ex">
-      <strong>${e.name}</strong>
-      <img src="${e.img}" alt="${e.name}">
-      <p class="cue">${e.cue}</p>
-    </div>
-  `).join('');
+function renderList(arr, id) {
+  document.getElementById(id).innerHTML = arr.map(e => `<div class="ex"><strong>${e.name}</strong> · ${e.time}s<img src="${e.img}" alt="${e.name}"><ol class="steps">${e.steps.map(s => `<li>${s}</li>`).join('')}</ol></div>`).join('');
 }
-renderExercises();
-
-let circuitInterval;
-let currentIdx = 0;
-let round = 1;
-let isWork = true;
-let remaining = 40;
-
-function startTimer(seconds, label) {
-  clearInterval(circuitInterval);
-  let rem = seconds;
-  const display = document.getElementById('timerDisplay');
-  display.textContent = `${label}: ${formatTime(rem)}`;
-  circuitInterval = setInterval(() => {
+renderList(warmup, 'warmupList');
+renderList(exercises, 'exercises');
+renderList(yoga, 'yogaList');
+let interval;
+function startGuided(list, timerId, currentId, label) {
+  clearInterval(interval);
+  let idx = 0, rem = list[0].time;
+  const timer = document.getElementById(timerId);
+  const curr = document.getElementById(currentId);
+  function tick() {
+    if (idx >= list.length) { timer.textContent = label + " complete"; curr.textContent = "Done."; clearInterval(interval); return; }
+    curr.innerHTML = `<strong>${list[idx].name}</strong><br>${list[idx].steps[0]}`;
+    timer.textContent = Math.floor(rem/60) + ":" + (rem%60).toString().padStart(2,"0");
     rem--;
-    display.textContent = `${label}: ${formatTime(rem)}`;
-    if (rem <= 0) {
-      clearInterval(circuitInterval);
-      display.textContent = `${label} complete`;
-    }
-  }, 1000);
+    if (rem < 0) { idx++; if (idx < list.length) rem = list[idx].time; }
+  }
+  tick();
+  interval = setInterval(tick, 1000);
 }
-
-function formatTime(s) {
-  return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`;
-}
-
+function startWarmup() { startGuided(warmup, "warmupTimer", "warmupCurrent", "Warm-up"); }
 function startCircuit() {
-  clearInterval(circuitInterval);
-  currentIdx = 0;
-  round = 1;
-  isWork = true;
-  remaining = 40;
-  runCircuit();
-}
-
-function runCircuit() {
-  const display = document.getElementById('timerDisplay');
-  const curr = document.getElementById('currentExercise');
-  if (currentIdx >= exercises.length) {
-    if (round < 2) {
-      round++;
-      currentIdx = 0;
-      isWork = false;
-      remaining = 20;
-      curr.textContent = `Rest → Round ${round}`;
-    } else {
-      display.textContent = "Circuit done";
-      curr.textContent = "Log your session in Tracker";
-      clearInterval(circuitInterval);
-      return;
-    }
+  const c = [];
+  for (let r = 0; r < 2; r++) {
+    exercises.forEach(ex => { c.push({...ex, time:40, name:`R${r+1} · ${ex.name}`}); c.push({name:"Rest", time:20, steps:["Breathe."], img:""}); });
   }
-  const ex = exercises[currentIdx];
-  if (isWork) {
-    curr.textContent = `R${round} · ${ex.name}`;
-    remaining = 40;
-  } else {
-    curr.textContent = "Transition / Rest";
-    remaining = 20;
-  }
-  display.textContent = formatTime(remaining);
-  circuitInterval = setInterval(() => {
-    remaining--;
-    display.textContent = formatTime(remaining);
-    if (remaining <= 0) {
-      clearInterval(circuitInterval);
-      if (isWork) {
-        isWork = false;
-        currentIdx++;
-      } else {
-        isWork = true;
-      }
-      runCircuit();
-    }
-  }, 1000);
+  startGuided(c, "timerDisplay", "currentExercise", "Circuit");
 }
-
+function startYoga() { startGuided(yoga, "yogaTimer", "yogaCurrent", "Yoga"); }
 function logWeight() {
-  const w = parseFloat(document.getElementById('weight').value);
-  if (!w) return;
-  let weights = JSON.parse(localStorage.getItem('weights') || '[]');
-  weights.push({ date: new Date().toLocaleDateString(), weight: w });
-  localStorage.setItem('weights', JSON.stringify(weights));
+  const w = parseFloat(document.getElementById('weight').value); if (!w) return;
+  let ws = JSON.parse(localStorage.getItem('weights') || '[]');
+  ws.push({date: new Date().toLocaleDateString(), weight: w});
+  localStorage.setItem('weights', JSON.stringify(ws));
   renderWeights();
 }
-
 function renderWeights() {
-  const weights = JSON.parse(localStorage.getItem('weights') || '[]');
+  const ws = JSON.parse(localStorage.getItem('weights') || '[]');
   const div = document.getElementById('weightHistory');
-  if (!weights.length) { div.innerHTML = '<p class="small">No entries yet.</p>'; return; }
-  const last = weights[weights.length-1];
-  const first = weights[0];
-  const delta = (last.weight - first.weight).toFixed(1);
-  div.innerHTML = `<p>Latest: <strong>${last.weight} lbs</strong> (${delta > 0 ? '+' : ''}${delta} from first log). Target <145.</p>`;
+  if (!ws.length) { div.innerHTML = '<p>No entries yet.</p>'; return; }
+  const last = ws[ws.length-1], first = ws[0];
+  div.innerHTML = `<p>Latest: <strong>${last.weight} lbs</strong> (${(last.weight-first.weight).toFixed(1)} from first). Target <145.</p>`;
 }
-
 function logSession() {
-  const entry = {
-    date: new Date().toLocaleDateString(),
-    pushVar: document.getElementById('pushVar').value,
-    pushPerf: document.getElementById('pushPerf').value,
-    squatVar: document.getElementById('squatVar').value,
-    squatPerf: document.getElementById('squatPerf').value
-  };
-  let sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
-  sessions.push(entry);
-  localStorage.setItem('sessions', JSON.stringify(sessions));
+  const entry = { date: new Date().toLocaleDateString(), pushVar: document.getElementById('pushVar').value, pushPerf: document.getElementById('pushPerf').value, squatVar: document.getElementById('squatVar').value, squatPerf: document.getElementById('squatPerf').value };
+  let ss = JSON.parse(localStorage.getItem('sessions') || '[]');
+  ss.push(entry); localStorage.setItem('sessions', JSON.stringify(ss));
   renderHistory();
-  adapt(entry, sessions);
+  document.getElementById('adaptation').innerHTML = "Saved. Add 1-2 reps next time if easy.";
 }
-
-function adapt(entry, sessions) {
-  const div = document.getElementById('adaptation');
-  let advice = [];
-  const pushNum = parseInt(entry.pushPerf) || 0;
-  if (pushNum >= 15 && entry.pushVar === 'Standard') advice.push("Push-ups solid. Next session try diamond or 3-second lower.");
-  else if (pushNum < 8) advice.push("Stay on knee or incline push-ups until 10+ clean reps.");
-  const squatNum = parseInt(entry.squatPerf) || 0;
-  if (squatNum >= 20) advice.push("Squats easy → try jump squats or Bulgarian split squats.");
-  if (sessions.length >= 3) {
-    const recent = sessions.slice(-3);
-    const avg = recent.reduce((a,s) => a + (parseInt(s.pushPerf)||0), 0) / 3;
-    if (avg > 12) advice.push("Consistent. Lengthen work to 45s or add a 3rd round.");
-  }
-  if (!advice.length) advice.push("Good session. Keep form. Add 1–2 reps or 5s next time.");
-  div.innerHTML = "<strong>Advice:</strong><br>" + advice.join("<br>");
-}
-
 function renderHistory() {
-  const sessions = JSON.parse(localStorage.getItem('sessions') || '[]');
-  const div = document.getElementById('history');
-  if (!sessions.length) { div.innerHTML = '<p class="small">No sessions yet.</p>'; return; }
-  div.innerHTML = sessions.slice(-8).reverse().map(s => 
-    `<div class="log-entry">${s.date}: ${s.pushVar} push ${s.pushPerf} · ${s.squatVar} squat ${s.squatPerf}</div>`
-  ).join('');
+  const ss = JSON.parse(localStorage.getItem('sessions') || '[]');
+  document.getElementById('history').innerHTML = ss.slice(-6).reverse().map(s => `<div>${s.date}: ${s.pushVar} ${s.pushPerf} · ${s.squatVar} ${s.squatPerf}</div>`).join('') || '<p>No sessions yet.</p>';
 }
-
-renderWeights();
-renderHistory();
-showTab('plan');
+renderWeights(); renderHistory(); showTab('plan');
 </script>
 </body>
 </html>
