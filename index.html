@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Daily Military Calisthenics</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  :root { --bg: #0d0d0d; --card: #1a1a1a; --accent: #00aaff; --text: #f0f0f0; --muted: #aaa; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; line-height: 1.4; max-width: 480px; margin: 0 auto; }
+  h1 { font-size: 1.4rem; color: var(--accent); margin: 8px 0; }
+  h2 { font-size: 1.1rem; color: var(--accent); margin: 12px 0 6px; }
+  .card { background: var(--card); border-radius: 12px; padding: 14px; margin: 10px 0; }
+  button { background: var(--accent); color: #000; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; margin: 6px 0; font-size: 1rem; }
+  button.secondary { background: #333; color: var(--text); }
+  input, select { width: 100%; padding: 10px; margin: 4px 0; background: #222; color: var(--text); border: 1px solid #444; border-radius: 6px; }
+  .timer { font-size: 2.4rem; font-weight: bold; text-align: center; color: #0f0; margin: 8px 0; }
+  .ex { margin: 10px 0; }
+  .ex img { width: 100%; border-radius: 8px; margin: 6px 0; max-height: 220px; object-fit: cover; }
+  .cue { font-size: 0.9rem; color: var(--muted); }
+  .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .tabs button { flex: 1; }
+  .hidden { display: none; }
+  .log-entry { font-size: 0.85rem; padding: 6px 0; border-bottom: 1px solid #333; }
+  .progress { color: #4caf50; }
+  .small { font-size: 0.8rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<h1>Military Calisthenics Daily</h1>
+<p class="small">52 · 5'5.5" · 149 → <145 lbs · Muscle retention + fitness</p>
+<div class="tabs">
+  <button onclick="showTab('plan')">Plan</button>
+  <button onclick="showTab('workout')">Workout</button>
+  <button onclick="showTab('tracker')">Tracker</button>
+</div>
+<!-- Full app content is in the local version; this is a starter. Upload complete files for images and full JS. -->
+<p>App uploaded. Enable GitHub Pages and add the image files for full visuals.</p>
+<script>
+function showTab(name) { alert('Full version coming'); }
+</script>
+</body>
+</html>
